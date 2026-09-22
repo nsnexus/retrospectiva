@@ -1,0 +1,12 @@
+name = "nsnexus-prospeccao"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-01"
+
+[vars]
+FIREBASE_PROJECT_ID = "leeds-316cc"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "prospeccao-catalogo"
+database_id = "SUBSTITUA-PELO-ID-DO-D1"
+migrations_dir = "migrations"

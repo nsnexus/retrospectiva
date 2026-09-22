@@ -1,0 +1,3 @@
+import type {Company} from './domain';
+export const cities=[{name:'Parauapebas',state:'PA',lat:-6.0675,lng:-49.9022},{name:'Canaã dos Carajás',state:'PA',lat:-6.4966,lng:-49.8776},{name:'Curionópolis',state:'PA',lat:-6.099,lng:-49.6067}];
+export const companies:Company[]=Array.from({length:12},(_,i)=>({cnpj:`DEMO${String(i+1).padStart(10,'0')}`,name:['Horizonte Engenharia','Carajás Instalações','Norte Soluções','Vale Construções'][i%4]+' • Exemplo '+(i+1),cnae:i%2?'4321500':'4120400',sector:i%2?'Instalações elétricas':'Construção de edifícios',city:cities[i%3].name,state:'PA',address:'Endereço fictício, '+(i+1),phone:'',email:'',opened:'2025-01-15',lat:cities[i%3].lat+i*.001,lng:cities[i%3].lng}));

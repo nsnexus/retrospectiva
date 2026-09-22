@@ -1,0 +1,7 @@
+export const statuses = ['Novo','Contatado','Respondeu','Interessado','Orçamento enviado','Cliente','Não tem interesse','Contato inválido'] as const;
+export type Company = {cnpj:string; name:string; cnae:string; sector:string; city:string; state:string; address:string; phone:string; email:string; opened:string; lat:number; lng:number};
+export type Lead = {company:Company; status:typeof statuses[number]; notes:string; nextAttempt:string; lastContact:string; updatedAt:string};
+export function distance(a:number,b:number,c:number,d:number) { const r=Math.PI/180; const h=Math.sin((c-a)*r/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin((d-b)*r/2)**2; return 6371*2*Math.asin(Math.sqrt(Math.min(1,h))); }
+export const normalize=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+export function whatsapp(phone:string) { let n=phone.replace(/\D/g,''); if(n.length===10||n.length===11)n='55'+n; return /^55\d{10,11}$/.test(n)?`https://wa.me/${n}`:null; }
+export function csv(leads:Lead[]) { const escape=(s:string)=>'"'+(/^[\s]*[=+@-]/.test(s)?"'"+s:s).replace(/"/g,'""')+'"'; return '\uFEFF'+[['Empresa','CNPJ','CNAE','Cidade','Endereço','Telefone','E-mail','Status','Observações','Próxima tentativa','Último contato'],...leads.map(l=>[l.company.name,l.company.cnpj,l.company.cnae,l.company.city,l.company.address,l.company.phone,l.company.email,l.status,l.notes,l.nextAttempt,l.lastContact])].map(row=>row.map(escape).join(';')).join('\r\n'); }
