@@ -32,6 +32,8 @@ As regras permitem apenas ao usuário autenticado ler/gravar em `users/{uid}/lea
 
 ## Cloudflare Pages
 
+O `wrangler.toml` já contém a configuração pública Web do Firebase `leeds-316cc` nas variáveis `VITE_*`, com demonstração desativada. Esses identificadores são incorporados ao frontend e não são credenciais administrativas. Para este projeto, mantenha esses valores no deploy; ao usar outro Firebase, atualize todas as variáveis correspondentes. Os arquivos `.env.local` e `.dev.vars` continuam fora do Git.
+
 1. Crie D1 com `npx wrangler d1 create prospeccao-catalogo` e coloque o ID retornado em `wrangler.toml`.
 2. Substitua `FIREBASE_PROJECT_ID` no mesmo arquivo. A API valida assinatura, validade, emissor e audiência do token Firebase.
 3. Aplique `npx wrangler d1 migrations apply prospeccao-catalogo --remote`.

@@ -4,6 +4,13 @@ compatibility_date = "2026-09-01"
 
 [vars]
 FIREBASE_PROJECT_ID = "leeds-316cc"
+# Configuração pública do aplicativo Web Firebase, usada no build do Vite.
+# Não adicionar chaves privadas ou credenciais de serviço aqui.
+VITE_DEMO_MODE = "false"
+VITE_FIREBASE_API_KEY = "AIzaSyBC-QU5cfWFCMc87apeC5F7--7TNV9wHeY"
+VITE_FIREBASE_AUTH_DOMAIN = "leeds-316cc.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID = "leeds-316cc"
+VITE_FIREBASE_APP_ID = "1:27127473587:web:9f038856c530dafcbdd7c6"
 
 [[d1_databases]]
 binding = "DB"
