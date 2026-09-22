@@ -8,5 +8,5 @@ FIREBASE_PROJECT_ID = "leeds-316cc"
 [[d1_databases]]
 binding = "DB"
 database_name = "prospeccao-catalogo"
-database_id = "SUBSTITUA-PELO-ID-DO-D1"
+database_id = "c2a4e31c-7c77-4392-94aa-a91c9dbfd058"
 migrations_dir = "migrations"
