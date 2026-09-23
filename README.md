@@ -11,7 +11,7 @@ Requer Node.js 22.12+ e npm. Execute `npm ci`, copie `.env.example` para `.env.l
 ## Funcionalidades
 
 - Busca por ramo textual/CNAE, cidade + UF, raio de 1 a 500 km e período de abertura.
-- Catálogo importado somente com empresas ativas e coordenadas. Distância em linha reta a partir do centro do município, não percurso rodoviário.
+- Catálogo de empresas ativas da Receita. Na carga pública, o raio é aproximado entre sedes municipais, não a distância do endereço da empresa nem percurso rodoviário.
 - Até 100 resultados por consulta, com aviso para refinar filtros quando houver mais.
 - Ficha com CNPJ, endereço, contato e abertura. Salvar ficha cadastra lead; CNPJ é a chave para evitar duplicatas.
 - Status comercial, observações, último contato e próxima tentativa; indicadores de pendências.
@@ -49,14 +49,16 @@ Referências: [Cloudflare: configuração de build](https://developers.cloudflar
 ## Catálogo de CNPJ: separado do Firestore
 
 ```text
-Arquivos públicos → armazenamento bruto externo → ETL/junções + geocodificação
+Arquivos públicos → processamento em fluxo → junções + coordenadas municipais
    → recorte regional normalizado → D1 → Pages API autenticada → busca
    → somente empresas selecionadas → Firestore (carteira de cada usuário)
 ```
 
 A base nacional **não** vai para Firestore nem para o bundle frontend. D1 é adequado ao recorte regional inicial, não se propõe armazenar toda a base nacional. Para expansão, substitua a consulta da Function por um serviço PostgreSQL/PostGIS e mantenha o contrato `GET /api/companies`. Use armazenamento de objetos para arquivos brutos e processamento em lotes fora das Functions.
 
-O importador incluído recebe **JSONL normalizado**, não ZIP/CSV bruto da Receita. A etapa de baixar, unir estabelecimentos/empresas/CNAEs/municípios e geocodificar endereços ainda precisa ser conectada a uma fonte de dados. Não invente coordenadas: mantenha registros sem geocodificação em quarentena; coordenadas de centroides para empresas reduzem a precisão do raio. Registre fonte, competência e precisão no processo externo. O ramo é busca textual na descrição oficial; não há conversão automática por IA de sinônimos para CNAEs.
+O coletor `scripts/receita.py` baixa diretamente os ZIPs públicos da Receita, filtra a região e cruza estabelecimentos, empresas, municípios e CNAEs. `scripts/publish-catalog.py` valida e publica o recorte no D1. Veja [passo a passo da carga e atualização](docs/IMPORTACAO-RECEITA.md). A busca também reconhece sinônimos comerciais como barbearia, dentista e auto elétrica; sempre exibe o CNAE oficial correspondente.
+
+O importador alternativo `scripts/import-catalog.mjs` continua disponível para **JSONL normalizado com geocodificação individual**, no formato abaixo.
 
 Cada linha deve conter:
 
@@ -68,7 +70,7 @@ Esse registro é apenas exemplo de formato. Preserve CNPJ como texto, inclusive 
 
 Execute `node scripts/import-catalog.mjs data/catalogo.jsonl data/catalogo.sql PA`, depois `npx wrangler d1 execute prospeccao-catalogo --remote --file=data/catalogo.sql`. O importador filtra UF e empresas ativas, valida campos e escreve em fluxo, sem carregar o arquivo inteiro na memória. Divida grandes saídas conforme os limites do provedor. Em caso de erro descarte a saída parcial, corrija a entrada e gere outro arquivo. Não versione catálogos ou contatos reais.
 
-Para atualização de competência, carregue uma **nova base regional** e troque o binding após validar contagens e amostras. O upsert não remove empresas que encerraram atividades: não trate importações incrementais como substituição completa. Os leads existentes preservam a ficha capturada; não são sobrescritos pela importação.
+O publicador da carga Receita substitui o catálogo completo após validar as tabelas temporárias, preservando um backup da base anterior. O importador JSONL usa upsert e não remove empresas encerradas: não o trate como substituição completa. Os leads existentes preservam a ficha capturada; não são sobrescritos pela importação.
 
 ## Validação antes de produção
 

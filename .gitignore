@@ -6,3 +6,4 @@ dist/
 .wrangler/
 data/
 *.log
+__pycache__/
